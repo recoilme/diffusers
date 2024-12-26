@@ -235,7 +235,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
 
         # See Section 3.1. of the paper. (???)
         max_length = max_sequence_length
-        #select_index = [0] + list(range(-max_length + 1, 0))
+        select_index = [0] + list(range(-max_length + 1, 0))
 
         if prompt_embeds is None:
             prompt = self._text_preprocessing(prompt, clean_caption=clean_caption)
@@ -263,8 +263,8 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             prompt_attention_mask = prompt_attention_mask.to(device)
 
             prompt_embeds = self.text_encoder(input_ids=text_input_ids.to(device), attention_mask=prompt_attention_mask)
-            prompt_embeds = prompt_embeds[0]#[:, select_index]
-            prompt_attention_mask = prompt_attention_mask#[:, select_index]
+            prompt_embeds = prompt_embeds[0][:, select_index]
+            prompt_attention_mask = prompt_attention_mask[:, select_index]
 
         if self.transformer is not None:
             dtype = self.transformer.dtype
