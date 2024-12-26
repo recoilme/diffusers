@@ -262,7 +262,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             prompt_attention_mask = text_inputs.attention_mask
             prompt_attention_mask = prompt_attention_mask.to(device)
 
-            prompt_embeds = self.text_encoder(text_input_ids.to(device), attention_mask=prompt_attention_mask)
+            prompt_embeds = self.text_encoder(input_ids=text_input_ids.to(device), attention_mask=prompt_attention_mask)
             prompt_embeds = prompt_embeds[0][:, select_index]
             prompt_attention_mask = prompt_attention_mask[:, select_index]
 
