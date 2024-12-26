@@ -150,7 +150,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         self,
         tokenizer: AutoTokenizer,
         text_encoder: AutoModelForCausalLM,
-        vae: Any[AutoencoderDC,AutoencoderKL],
+        vae: Union[AutoencoderDC, AutoencoderKL],
         transformer: SanaTransformer2DModel,
         scheduler: DPMSolverMultistepScheduler,
     ):
