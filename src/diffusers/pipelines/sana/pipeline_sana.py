@@ -24,7 +24,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from ...callbacks import MultiPipelineCallbacks, PipelineCallback
 from ...image_processor import PixArtImageProcessor
 from ...loaders import SanaLoraLoaderMixin
-from ...models import AutoencoderDC, SanaTransformer2DModel
+from ...models import AutoencoderDC, AutoencoderKL, SanaTransformer2DModel
 from ...schedulers import DPMSolverMultistepScheduler
 from ...utils import (
     BACKENDS_MAPPING,
@@ -150,7 +150,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         self,
         tokenizer: AutoTokenizer,
         text_encoder: AutoModelForCausalLM,
-        vae: AutoencoderDC,
+        vae: Any[AutoencoderDC,AutoencoderKL],
         transformer: SanaTransformer2DModel,
         scheduler: DPMSolverMultistepScheduler,
     ):
@@ -162,8 +162,8 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
 
         self.vae_scale_factor = (
             2 ** (len(self.vae.config.encoder_block_out_channels) - 1)
-            if hasattr(self, "vae") and self.vae is not None
-            else 32
+            if hasattr(self, "vae") and type(self.vae) is AutoencoderDC
+            else 8
         )
         self.image_processor = PixArtImageProcessor(vae_scale_factor=self.vae_scale_factor)
 
@@ -233,7 +233,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
 
         self.tokenizer.padding_side = "right"
 
-        # See Section 3.1. of the paper.
+        # See Section 3.1. of the paper. (???)
         max_length = max_sequence_length
         select_index = [0] + list(range(-max_length + 1, 0))
 
